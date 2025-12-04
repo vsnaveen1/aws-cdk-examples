@@ -15,10 +15,30 @@ dynamodb_client = boto3.client("dynamodb")
 
 def handler(event, context):
     table = os.environ.get("TABLE_NAME")
-    logging.info(f"## Loaded table name from environemt variable DDB_TABLE: {table}")
+    
+    # Log security-relevant request information
+    request_context = event.get("requestContext", {})
+    identity = request_context.get("identity", {})
+    
+    logger.info(
+        "Request received",
+        extra={
+            "request_id": context.request_id,
+            "source_ip": identity.get("sourceIp"),
+            "user_agent": identity.get("userAgent"),
+            "table_name": table
+        }
+    )
+    
     if event["body"]:
         item = json.loads(event["body"])
-        logging.info(f"## Received payload: {item}")
+        logger.info(
+            "Processing item write",
+            extra={
+                "item_id": item.get("id"),
+                "operation": "put_item"
+            }
+        )
         year = str(item["year"])
         title = str(item["title"])
         id = str(item["id"])
@@ -33,7 +53,7 @@ def handler(event, context):
             "body": json.dumps({"message": message}),
         }
     else:
-        logging.info("## Received request without a payload")
+        logger.warning("Request received without payload, using default data")
         dynamodb_client.put_item(
             TableName=table,
             Item={

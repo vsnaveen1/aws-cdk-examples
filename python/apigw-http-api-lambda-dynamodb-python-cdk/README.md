@@ -8,6 +8,25 @@ Creates an [AWS Lambda](https://aws.amazon.com/lambda/) function writing to [Ama
 
 ![architecture](docs/architecture.png)
 
+## Security and Compliance
+
+### Logging Configuration
+This stack implements comprehensive logging following AWS Well-Architected Framework best practices:
+
+- **API Gateway Access Logs**: Captures all API requests with caller identity, IP addresses, and response details
+- **Lambda Function Logs**: Application logs with security-relevant events and one-year retention
+- **VPC Flow Logs**: Network traffic logs for security investigations and anomaly detection
+- **DynamoDB Point-in-Time Recovery**: Continuous backups for data protection and forensic analysis
+
+### CloudTrail Requirements
+This stack requires AWS CloudTrail to be enabled at the account or organization level to capture API activity for security auditing and compliance. Ensure CloudTrail is configured with:
+- A trail capturing management events
+- S3 bucket for log storage with appropriate retention
+- Log file validation enabled
+- Multi-region trail configuration (recommended)
+
+Refer to [AWS Well-Architected Framework SEC04-BP01](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/sec_detect_investigate_events_app_service_logging.html) for detailed guidance.
+
 ## Setup
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
